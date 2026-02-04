@@ -885,10 +885,10 @@ This project is licensed under the MIT License.
 
 ## 👤 Author
 
-**Panca Khusnan**
+**Khusnan Hadi Eka Panca Dharma**
 
 - GitHub: [@khukhapede](https://github.com/khukhapede)
-- LinkedIn: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
+- LinkedIn: [Khusnan Hadi Eka Panca Dharma](https://linkedin.com/in/khusnan-hadi-eka)
 
 ---
 
