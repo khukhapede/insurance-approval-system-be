@@ -1,0 +1,762 @@
+{
+	"info": {
+		"name": "Insurance API - VERIFIER Role",
+		"description": "Complete test flow for VERIFIER role including what they CAN and CANNOT do",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "verifier_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "verifier_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "claim_id",
+			"value": "paste-claim-id-from-user-test",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Setup - Register & Login",
+			"item": [
+				{
+					"name": "Register Verifier",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response has accessToken', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('accessToken');",
+									"    pm.collectionVariables.set('verifier_token', response.accessToken);",
+									"});",
+									"",
+									"pm.test('User role is verifier', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.user.role).to.eql('verifier');",
+									"    pm.collectionVariables.set('verifier_id', response.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"bob_verifier\",\n  \"email\": \"bob@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Bob Verifier\",\n  \"role\": \"verifier\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Verifier",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has accessToken', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('accessToken');",
+									"    pm.collectionVariables.set('verifier_token', response.accessToken);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"bob_verifier\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. What VERIFIER CAN Do",
+			"item": [
+				{
+					"name": "✅ Get My Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns my profile', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.username).to.eql('bob_verifier');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/profile",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns array of users', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": ["{{base_url}}"],
+							"path": ["users"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get Submitted Claims",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns array of submitted claims', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/claims/submitted",
+							"host": ["{{base_url}}"],
+							"path": ["claims", "submitted"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get Claim Details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns claim details', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('id');",
+									"    pm.expect(response).to.have.property('title');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/claims/{{claim_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["claims", "{{claim_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Verify Claim",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Claim status changed to verified', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('status');",
+									"    pm.expect(response.status).to.eql('verified');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comment\": \"All documents verified successfully\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/claims/{{claim_id}}/verify",
+							"host": ["{{base_url}}"],
+							"path": ["claims", "{{claim_id}}", "verify"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get All Activity Logs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns activity logs', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.be.an('array');",
+									"    pm.expect(response.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/activity-logs",
+							"host": ["{{base_url}}"],
+							"path": ["activity-logs"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get Activity Logs by Claim",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns activity logs for claim', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.be.an('array');",
+									"    pm.expect(response.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/activity-logs/claim/{{claim_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["activity-logs", "claim", "{{claim_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Get My Activities",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Returns my activity history', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.be.an('array');",
+									"    pm.expect(response.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/activity-logs/my-activities",
+							"host": ["{{base_url}}"],
+							"path": ["activity-logs", "my-activities"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. What VERIFIER CANNOT Do",
+			"item": [
+				{
+					"name": "❌ Create User (403 Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"hacker\",\n  \"email\": \"hacker@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Hacker User\",\n  \"role\": \"approver\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": ["{{base_url}}"],
+							"path": ["users"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Update User (403 Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"Hacked Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{verifier_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{verifier_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Delete User (403 Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{verifier_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{verifier_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Create Claim (403 Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Fake Claim\",\n  \"description\": \"Trying to create claim\",\n  \"claimAmount\": 100000,\n  \"claimType\": \"medical\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/claims",
+							"host": ["{{base_url}}"],
+							"path": ["claims"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Update Claim (403 Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"claimAmount\": 999999\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/claims/{{claim_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["claims", "{{claim_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Delete Claim (403 Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/claims/{{claim_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["claims", "{{claim_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Get Verified Claims (403 Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/claims/verified",
+							"host": ["{{base_url}}"],
+							"path": ["claims", "verified"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Approve Claim (403 Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comment\": \"Trying to approve claim\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/claims/{{claim_id}}/approve",
+							"host": ["{{base_url}}"],
+							"path": ["claims", "{{claim_id}}", "approve"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Reject Claim (403 Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 403', function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{verifier_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Trying to reject claim\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/claims/{{claim_id}}/reject",
+							"host": ["{{base_url}}"],
+							"path": ["claims", "{{claim_id}}", "reject"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
