@@ -22,6 +22,12 @@ import { HealthModule } from './health/health.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
       logging: false,
+      ssl:
+        process.env.NODE_ENV === 'production'
+          ? {
+              rejectUnauthorized: false,
+            }
+          : false,
     }),
     UsersModule,
     AuthModule,
