@@ -28,7 +28,7 @@ export class User {
   email: string;
 
   @Column({ length: 255 })
-  @Exclude() // Don't return password in API responses
+  @Exclude()
   password: string;
 
   @Column({ name: 'full_name', length: 100 })
